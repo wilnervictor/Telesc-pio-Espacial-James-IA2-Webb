@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Inteligente</title>
+    <style>
+        /* Estilos para layout e apresentação */
+        main {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f2f2f2;
+        }
+        #chatContainer {
+            width: 400px;
+            max-width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        #messages {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .userMessage, .botMessage {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .userMessage {
+            background-color: #d1e7dd;
+            text-align: right;
+        }
+        .botMessage {
+            background-color: #e2e3e5;
+            text-align: left;
+        }
+        #inputContainer {
+            display: flex;
+            gap: 10px;
+        }
+        #messageInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #sendButton {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #sendButton:hover {
+            background-color: #0056b3;
+        }
+        *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+a{
+    color: black;
+    text-decoration: none;
+    transition: 0.3s;
+}
+a:hover{
+    opacity: 0.7;
+}
+.logo{
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+.logo2{
+    width: 50px; /* Largura da logo */
+    margin-right: 20px; /* Espaço à direita da logo */
+    border-radius: 50%;
+}
+nav{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #007bff;
+    height: 8vh;
+}
+.nav-list{
+    list-style: none;
+    display: flex;
+}
+.nav-list li{
+    letter-spacing: 3px;
+    margin-left: 32px;
+}
+.mobile-menu{
+    cursor: pointer;
+   display: none;
+}
+.mobile-menu div{
+    width: 32px;
+    height: 2px;
+    background: blue;
+    margin: 8px;
+}
+
+    /* CSS para o menu */
+.mobile-menu {
+    display: none; /* Oculte o menu por padrão */
+}
+
+@media (max-width: 999px) {
+    .nav-list {
+        display: none; /* Oculte a lista por padrão em telas pequenas */
+        position: absolute;
+        top:10vh;
+        right: 240px;
+        width: 45vw;
+        height: 92vh;
+        background: black;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        transition: transform 0.3s ease;
+    }
+
+    .nav-list.active {
+        display: flex; /* Mostre a lista quando ativa */
+    }
+
+    .mobile-menu {
+        display: block; /* Mostre o botão do menu em telas pequenas */
+    }
+    nav {
+        position: relative; /* Para que o z-index funcione */
+        z-index: 10; /* Coloca o menu acima de outros elementos */
+        background: black; /* Para garantir que o fundo do menu seja visível */
+    }
+    a{
+    color: #fff;
+    
+}
+    
+}
+       
+    </style>
+</head>
+<body>
+    <div>
+    <a href="./IA.html">
+        <img src="./src/img/logo.jpg"  alt="Logo2" class="logo2" >
+        </a>
+        <a class="logo" href="./tjw.html">TJW</a>
+        <div class="mobile-menu" onclick="menu()">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+        <ul class="nav-list">
+            <li>
+              <a href="./index.html">Inicio</a>
+            </li>
+            <li>
+              <a href="./Sobre.html">Sobre</a>
+            </li>
+            <li>
+              <a href="./Projeto.html">Projetos</a>
+            </li>
+            <li>
+              <a href="./Contatos.html">Contato</a>
+            </li>
+        </ul>
+    </div>
+    
+<main>
+    
+    <div id="chatContainer">
+        <div id="messages"></div>
+        <div id="inputContainer">
+            <input type="text" id="messageInput" placeholder="Digite sua mensagem">
+            <button id="sendButton" onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+</main>
+    <script>
+        function sendMessage() {
+            let msg = document.getElementById('messageInput').value.trim().toLowerCase();
+            let res = document.getElementById('messages');
+
+            if (msg === "") return;
+
+            res.innerHTML += `<div class="userMessage">${msg}</div>`;
+
+            let greetings = ["Olá, como posso ajudar?", "Oi! Tudo bem?", "Olá! Em que posso te ajudar?", "Oi! Como você está?"];
+            
+            let keywords = {
+                "ajuda": "Posso ajudar com várias coisas! Pergunte-me algo específico.",
+                "informação": "Que tipo de informação você está procurando?",
+                "tchau": "Até mais! Espero ter ajudado."
+            };
+            
+            let approximateMatches = {
+                "como você está?": "Estou bem, obrigado por perguntar!",
+                "quem é você?": "Sou uma IA pronta para ajudar você! Pode me chmar de ESTEL-IA."
+            };
+
+            function similarEnough(input, target) {
+                const maxErrors = 2;
+                let errors = 0;
+
+                for (let i = 0, j = 0; i < input.length && j < target.length; i++, j++) {
+                    if (input[i] !== target[j]) {
+                        errors++;
+                        if (errors > maxErrors) return false;
+                        if (input.length > target.length) j--;
+                        else if (input.length < target.length) i--;
+                    }
+                }
+
+                return errors <= maxErrors;
+            }
+
+            function randomResponse(responses) {
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+
+            let response = null;
+            for (let key in approximateMatches) {
+                if (similarEnough(msg, key)) {
+                    response = approximateMatches[key];
+                    break;
+                }
+            }
+
+            if (!response) {
+                if (Object.keys(keywords).some(keyword => msg.includes(keyword))) {
+                    response = keywords[Object.keys(keywords).find(keyword => msg.includes(keyword))];
+                } 
+                else if (msg === "oi" || msg === "olá" || msg === "hello") {
+                    response = randomResponse(greetings);
+                } 
+                else if (["clima", "tempo", "previsão"].some(word => similarEnough(msg, word))) {
+                    const climateResponses = [
+                        "Hoje está ensolarado!", 
+                        "Parece que vai chover mais tarde.", 
+                        "A previsão indica tempo nublado.", 
+                        "O clima está agradável hoje.", 
+                        "Pode esperar um dia quente e ensolarado!"
+                    ];
+                    response = randomResponse(climateResponses);
+                } 
+                else if (["quem é você", "o que é você", "você é um robô", "o que você faz"].some(question => similarEnough(msg, question))) {
+                    const aboutResponses = [
+                        "Eu sou um assistente virtual criado para ajudar com informações e tirar dúvidas! Meu nome é ESTEL-IA",
+                        "Sou um chatbot desenvolvido pelo Wilner para responder perguntas e auxiliar em várias tarefas.",
+                        "Eu sou um assistente de IA meu nome é ESTEL-IA, estou aqui para ajudar você com informações e respostas inteligentes."
+                    ];
+                    response = randomResponse(aboutResponses);
+                } 
+                else if (["quem é wilner", "quem criou você", "quem fez você"].some(question => similarEnough(msg, question))) {
+                    const creatorResponses = [
+                        "Eu fui criado pelo Wilner, que está aprendendo e desenvolvendo suas habilidades de programação!",
+                        "Meu criador é Wilner, um desenvolvedor dedicado e curioso.",
+                        "Fui desenvolvido pelo Wilner para ser um assistente inteligente. Ele está sempre melhorando minhas capacidades!"
+                    ];
+                    response = randomResponse(creatorResponses);
+                } 
+                else if (["james webb", "telescópio james webb", "james webb space telescope"].some(question => similarEnough(msg, question))) {
+                    const webbResponses = [
+                        "O Telescópio Espacial James Webb é o maior e mais poderoso telescópio já lançado ao espaço.",
+                        "O James Webb foi projetado para estudar o universo distante, captando imagens de galáxias e estrelas formadas logo após o Big Bang.",
+                        "Com um espelho de 6,5 metros de diâmetro, o telescópio James Webb é capaz de captar imagens com uma precisão incrível.",
+                        "O James Webb substituiu o Hubble como principal telescópio espacial, mas trabalha em comprimentos de onda de infravermelho para ver mais longe no espaço."
+                    ];
+                    response = randomResponse(webbResponses);
+                } 
+                else if (["estudo do universo", "origem do universo", "universo distante"].some(question => similarEnough(msg, question))) {
+                    const universeResponses = [
+                        "O Telescópio James Webb foi projetado para estudar a origem do universo e nos mostrar como as galáxias se formaram.",
+                        "Um dos objetivos do James Webb é observar estrelas e galáxias que surgiram logo após o Big Bang.",
+                        "O James Webb permite ver galáxias a bilhões de anos-luz de distância, algo que era impossível com outros telescópios."
+                    ];
+                    response = randomResponse(universeResponses);
+                }
+                else if (["ESTEL-IA", "estel-ia", "estela"].some(word => similarEnough(msg, word))) {
+                    const ESTEL_AI = [
+                        "Oi, tudo bem? Como posso ajudar?.", 
+                        "OLá, o que gostaria de saber.", 
+                        "Oi, tudo bem.", 
+                        "hello, como você esta?.", 
+                        "Oi,"
+                    ];
+                    response = randomResponse(ESTEL_AI);
+                } 
+                else {
+                    response = "Desculpe, não entendi.";
+                }
+            }
+
+            res.innerHTML += `<div class="botMessage">${response}</div>`;
+            res.scrollTop = res.scrollHeight;
+
+            document.getElementById('messageInput').value = '';
+        }
+        // Função para abrir/fechar o menu
+    function menu() {
+        const navList = document.querySelector('.nav-list');
+        navList.classList.toggle('active'); // Adiciona ou remove a classe 'active'
+    }
+
+    </script>
+    
+</body>
+</html>
